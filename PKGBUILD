@@ -5,7 +5,7 @@
 # Maintainer: jooch <jooch AT gmx DOT com>
 
 pkgname=freefilesync
-pkgver=10.7
+pkgver=10.8
 pkgrel=1
 pkgdesc="Backup software to synchronize files and folders"
 arch=('i686' 'x86_64')
@@ -23,7 +23,7 @@ source=(
 	rtsicon.png
 	)
 
-sha256sums=('9291121b00e6dfab7836ada9bb5d92c38b4200d9577dc4a5c336899ebcc06488'
+sha256sums=('ac33e69d1e2be65fdea60e056d43eef7db26c34ee4e0491f90db487f33674388'
             '052ef5bf5eb11730499f4b81cd7e70f990fff3cfcc2f7059b84981e7ededc361'
             'fef8aa099a27c277b76f1229651ed2324355528482c8f115e09c39269bbf4bdd'
             'b381bb9dbda25c3c08a67f18072a2761abe34339ddf3318e1758eb7c349f1a3b'
