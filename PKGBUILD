@@ -5,7 +5,7 @@
 # Maintainer: jooch <jooch AT gmx DOT com>
 
 pkgname=freefilesync
-pkgver=10.8
+pkgver=10.9
 pkgrel=1
 pkgdesc="Backup software to synchronize files and folders"
 arch=('i686' 'x86_64')
@@ -23,7 +23,7 @@ source=(
 	rtsicon.png
 	)
 
-sha256sums=('ac33e69d1e2be65fdea60e056d43eef7db26c34ee4e0491f90db487f33674388'
+sha256sums=('221b905528f8800468f2f1edc33fbaa2ff0f4b6d5a4966fa20eafc18dadac3b0'
             '052ef5bf5eb11730499f4b81cd7e70f990fff3cfcc2f7059b84981e7ededc361'
             'fef8aa099a27c277b76f1229651ed2324355528482c8f115e09c39269bbf4bdd'
             'b381bb9dbda25c3c08a67f18072a2761abe34339ddf3318e1758eb7c349f1a3b'
@@ -50,7 +50,11 @@ prepare() {
     sed -i 's!-O3 -DN!-D"warn_static(arg)= " -O3 -DN!'		FreeFileSync/Source/RealTimeSync/Makefile
 
 # linker error
-    sed -i 's#inline##g' FreeFileSync/Source/ui/version_check_impl.h
+    # sed -i 's#inline##g' FreeFileSync/Source/ui/version_check_impl.h
+
+# remove architecture suffix from filenames of binaries
+    sed -i 's/EXENAME = FreeFileSync_$(shell arch)/EXENAME = FreeFileSync/' FreeFileSync/Source/Makefile
+    sed -i 's/EXENAME = RealTimeSync_$(shell arch)/EXENAME = RealTimeSync/' FreeFileSync/Source/RealTimeSync/Makefile
 
 # install error
     cp ${srcdir}/Changelog.txt ${srcdir}/FreeFileSync/Build
@@ -65,6 +69,10 @@ prepare() {
     
 # file not found error
 	sed -i '/\t"..\/Build\/User Manual.pdf" \\/d' FreeFileSync/Source/Makefile
+
+# inlining of constants not present in libssh2's distributed headers
+    sed -i 's/MAX_SFTP_READ_SIZE/30000/g' FreeFileSync/Source/fs/sftp.cpp
+    sed -i 's/MAX_SFTP_OUTGOING_SIZE/30000/g' FreeFileSync/Source/fs/sftp.cpp
 }
 
 build() {
@@ -88,12 +96,30 @@ build() {
 
 package() {
     cd ${srcdir}/FreeFileSync/Source
-    make DESTDIR=${pkgdir} install
+    # make DESTDIR=${pkgdir} install
 
-    cd RealTimeSync
-    make DESTDIR=${pkgdir} install
+    mkdir -p "${pkgdir}/usr/bin"
+    cp ../Build/Bin/FreeFileSync "${pkgdir}/usr/bin"
+
+    mkdir -p "${pkgdir}/usr/share/FreeFileSync"
+    cp -R ../Build/Languages/ \
+        ../Build/ding.wav \
+        ../Build/gong.wav \
+        ../Build/harp.wav \
+        ../Build/Resources.zip \
+        ../Build/styles.gtk_rc \
+        "${pkgdir}/usr/share/FreeFileSync"
+
+
+    mkdir -p "${pkgdir}/usr/share/doc/FreeFileSync"
+    cp ../../Changelog.txt "${pkgdir}/usr/share/doc/FreeFileSync/CHANGELOG"
+    gzip "${pkgdir}/usr/share/doc/FreeFileSync/CHANGELOG"
+
+    # cd RealTimeSync
+    # make DESTDIR=${pkgdir} install
 
     cd ${srcdir}
+    # TODO: extract from zip
     install -Dm644 FreeFileSync.desktop $pkgdir/usr/share/applications/FreeFileSync.desktop
     install -Dm644 ffsicon.png $pkgdir/usr/share/pixmaps/ffsicon.png
     install -Dm644 RealTimeSync.desktop $pkgdir/usr/share/applications/RealTimeSync.desktop
