@@ -37,10 +37,6 @@ prepare() {
 # Revert change to resources path of portable version
     patch --binary -p1 -i revert_resources_path.patch
 
-# remove architecture suffix from filenames of binaries
-    sed -i 's/EXENAME = FreeFileSync_$(shell arch)/EXENAME = FreeFileSync/' FreeFileSync/Source/Makefile
-    sed -i 's/EXENAME = RealTimeSync_$(shell arch)/EXENAME = RealTimeSync/' FreeFileSync/Source/RealTimeSync/Makefile
-
 # edit lines to remove functions that require wxgtk 3.1.x  
     sed -e 's:m_textCtrlOfflineActivationKey->ForceUpper:// &:g' -i 'FreeFileSync/Source/ui/small_dlgs.cpp'
     sed -e 's:const double scrollSpeed =:& 6; //:g' -i 'wx+/grid.cpp'
@@ -65,11 +61,11 @@ build() {
 
 ### FFS
     cd "${srcdir}/FreeFileSync/Source"
-    make
+    make EXENAME=FreeFileSync TMP_PATH="${srcdir}/FreeFileSync/tmp_ffs"
 
 ### RTS
     cd "${srcdir}/FreeFileSync/Source/RealTimeSync"
-    make
+    make EXENAME=RealTimeSync TMP_PATH="${srcdir}/FreeFileSync/tmp_rts"
 }
 
 package() {
