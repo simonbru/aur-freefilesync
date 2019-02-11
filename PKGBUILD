@@ -12,24 +12,20 @@ arch=('i686' 'x86_64')
 url="http://www.freefilesync.org/"
 license=('GPLv3')
 depends=(wxgtk webkit2gtk boost-libs)
-makedepends=(boost)
+makedepends=(boost unzip)
 source=(
 	"FreeFileSync_${pkgver}_Source.zip::https://www.freefilesync.org/download_redirect.php?file=FreeFileSync_${pkgver}_Source.zip"		#ffs
 	revert_resources_path.patch
 	revert_xdg_config_path.patch
 	FreeFileSync.desktop
-	ffsicon.png
 	RealTimeSync.desktop
-	rtsicon.png
 	)
 
 sha256sums=('221b905528f8800468f2f1edc33fbaa2ff0f4b6d5a4966fa20eafc18dadac3b0'
             '052ef5bf5eb11730499f4b81cd7e70f990fff3cfcc2f7059b84981e7ededc361'
             'fef8aa099a27c277b76f1229651ed2324355528482c8f115e09c39269bbf4bdd'
-            'b381bb9dbda25c3c08a67f18072a2761abe34339ddf3318e1758eb7c349f1a3b'
-            '31df3fa1f1310de14bbd379f891d4f8ed2df5b0d68913eb52c88b3be682933fb'
-            '1502efdbf1638856a18ab9916e0431bf6a53471792cb2daa380345bac33f67c4'
-            'f28042587dbe99cf5d6bef2c1be4b026488e418e4ba8332b3016d246b7053a4e')
+            'd492d71c722340a1e6ee8dbbbf1ea24e052b473c38ef2d64d7338131bf417adc'
+            '1321f3af06f0bc9c37dac369ca5960cba00961af7e2ceb76f18d16ca607ffa73')
 	 
 DLAGENTS=('https::/usr/bin/curl -fLC - --retry 3 --retry-delay 3 -A Mozilla -o %o %u')
 
@@ -48,9 +44,6 @@ prepare() {
 # warn_static(string)
     sed -i 's!-O3 -DN!-D"warn_static(arg)= " -O3 -DN!'		FreeFileSync/Source/Makefile
     sed -i 's!-O3 -DN!-D"warn_static(arg)= " -O3 -DN!'		FreeFileSync/Source/RealTimeSync/Makefile
-
-# linker error
-    # sed -i 's#inline##g' FreeFileSync/Source/ui/version_check_impl.h
 
 # remove architecture suffix from filenames of binaries
     sed -i 's/EXENAME = FreeFileSync_$(shell arch)/EXENAME = FreeFileSync/' FreeFileSync/Source/Makefile
@@ -99,22 +92,20 @@ package() {
     appsharedir="${pkgdir}/usr/share/FreeFileSync"
     appdocdir="${pkgdir}/usr/share/doc/FreeFileSync"
 
-    cd "${srcdir}/FreeFileSync/Source"
-    install -t "${bindir}" -D ../Build/Bin/FreeFileSync ../Build/Bin/RealTimeSync
-    install -t "${appsharedir}" -D -m644 \
-        ../Build/ding.wav \
-        ../Build/gong.wav \
-        ../Build/harp.wav \
-        ../Build/Resources.zip \
-        ../Build/styles.gtk_rc
-    install -t "${appsharedir}/Languages" -D -m644 ../Build/Languages/*.lng
-    install -d "${appdocdir}"
-    gzip < ../../Changelog.txt > "${appdocdir}/CHANGELOG.gz"
+    cd "${srcdir}/FreeFileSync/Build"
+    install -t "${bindir}" -Dm755 Bin/FreeFileSync Bin/RealTimeSync
+    install -t "${appsharedir}" -Dm644 \
+        ding.wav \
+        gong.wav \
+        harp.wav \
+        Resources.zip \
+        styles.gtk_rc
+    install -t "${appsharedir}/Languages" -Dm644 Languages/*.lng
 
     cd "${srcdir}"
-    # TODO: extract from zip
-    install -Dm644 FreeFileSync.desktop $pkgdir/usr/share/applications/FreeFileSync.desktop
-    install -Dm644 ffsicon.png $pkgdir/usr/share/pixmaps/ffsicon.png
-    install -Dm644 RealTimeSync.desktop $pkgdir/usr/share/applications/RealTimeSync.desktop
-    install -Dm644 rtsicon.png $pkgdir/usr/share/pixmaps/rtsicon.png
+    install -d "${appdocdir}"
+    gzip < Changelog.txt > "${appdocdir}/CHANGELOG.gz"
+    unzip -o FreeFileSync/Build/Resources.zip FreeFileSync.png RealTimeSync.png
+    install -Dm644 -t "${pkgdir}/usr/share/pixmaps" FreeFileSync.png RealTimeSync.png
+    install -Dm644 -t "${pkgdir}/usr/share/applications" FreeFileSync.desktop RealTimeSync.desktop
 }
