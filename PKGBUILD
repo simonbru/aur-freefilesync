@@ -95,30 +95,23 @@ build() {
 }
 
 package() {
-    cd ${srcdir}/FreeFileSync/Source
-    # make DESTDIR=${pkgdir} install
+    bindir="${pkgdir}/usr/bin"
+    appsharedir="${pkgdir}/usr/share/FreeFileSync"
+    appdocdir="${pkgdir}/usr/share/doc/FreeFileSync"
 
-    mkdir -p "${pkgdir}/usr/bin"
-    cp ../Build/Bin/FreeFileSync "${pkgdir}/usr/bin"
-
-    mkdir -p "${pkgdir}/usr/share/FreeFileSync"
-    cp -R ../Build/Languages/ \
+    cd "${srcdir}/FreeFileSync/Source"
+    install -t "${bindir}" -D ../Build/Bin/FreeFileSync ../Build/Bin/RealTimeSync
+    install -t "${appsharedir}" -D -m644 \
         ../Build/ding.wav \
         ../Build/gong.wav \
         ../Build/harp.wav \
         ../Build/Resources.zip \
-        ../Build/styles.gtk_rc \
-        "${pkgdir}/usr/share/FreeFileSync"
+        ../Build/styles.gtk_rc
+    install -t "${appsharedir}/Languages" -D -m644 ../Build/Languages/*.lng
+    install -d "${appdocdir}"
+    gzip < ../../Changelog.txt > "${appdocdir}/CHANGELOG.gz"
 
-
-    mkdir -p "${pkgdir}/usr/share/doc/FreeFileSync"
-    cp ../../Changelog.txt "${pkgdir}/usr/share/doc/FreeFileSync/CHANGELOG"
-    gzip "${pkgdir}/usr/share/doc/FreeFileSync/CHANGELOG"
-
-    # cd RealTimeSync
-    # make DESTDIR=${pkgdir} install
-
-    cd ${srcdir}
+    cd "${srcdir}"
     # TODO: extract from zip
     install -Dm644 FreeFileSync.desktop $pkgdir/usr/share/applications/FreeFileSync.desktop
     install -Dm644 ffsicon.png $pkgdir/usr/share/pixmaps/ffsicon.png
