@@ -28,7 +28,7 @@ sha256sums=('221b905528f8800468f2f1edc33fbaa2ff0f4b6d5a4966fa20eafc18dadac3b0' #
             '1321f3af06f0bc9c37dac369ca5960cba00961af7e2ceb76f18d16ca607ffa73' #RealTimeSync.desktop
 )
 	 
-DLAGENTS=('https::/usr/bin/curl -fLC - --retry 5 --retry-delay 3 -A Mozilla -o %o')
+DLAGENTS=('https::./truc.sh %o')
 
 prepare() {
 # wxgtk < 3.1.0
