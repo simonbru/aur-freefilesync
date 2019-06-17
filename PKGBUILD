@@ -73,14 +73,17 @@ build() {
 
 package() {
     bindir="${pkgdir}/usr/bin"
-    appsharedir="${pkgdir}/usr/share/FreeFileSync"
+    appdir="${pkgdir}/opt/FreeFileSync"
     appdocdir="${pkgdir}/usr/share/doc/FreeFileSync"
 
     cd "${srcdir}/FreeFileSync/Build"
-    install -t "${bindir}" -Dm755 Bin/FreeFileSync Bin/RealTimeSync
-    install -t "${appsharedir}/Misc" -Dm644 Misc/*
-    install -t "${appsharedir}/Languages" -Dm644 Languages/*.lng
-    install -t "${pkgdir}/usr/share/pixmaps" -Dm644 Misc/FreeFileSync.png Misc/RealTimeSync.png
+    install -t "${appdir}/Bin" -Dm755 Bin/*
+    mkdir -p "${bindir}"
+    ln -s /opt/FreeFileSync/Bin/{FreeFileSync,RealTimeSync} "${bindir}"
+
+    cp -rT Resources "${appdir}/Resources"
+    find "${appdir}/Resources" -type f -print0 | xargs -0 chmod 644
+    install -t "${pkgdir}/usr/share/pixmaps" -Dm644 Resources/FreeFileSync.png Resources/RealTimeSync.png
 
     cd "${srcdir}"
     install -d "${appdocdir}"
