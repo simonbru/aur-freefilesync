@@ -15,24 +15,24 @@ license=('GPL3')
 depends=(wxgtk curl lsb-release)
 makedepends=(unzip)
 source=(
-	"FreeFileSync_${pkgver}_Source.zip::${url}/download/FreeFileSync_${pkgver}_Source.zip"		#ffs
-	revert_xdg_config_path.patch
-	revert_bulk_append.patch
-	revert_linkflags.patch
-	FreeFileSync.desktop
-	RealTimeSync.desktop
-	dlagent
-	)
+    dlagent
+    "FreeFileSync_${pkgver}_Source.zip::${url}/download/FreeFileSync_${pkgver}_Source.zip"
+    revert_xdg_config_path.patch
+    revert_bulk_append.patch
+    revert_linkflags.patch
+    FreeFileSync.desktop
+    RealTimeSync.desktop
+    )
 
-sha256sums=('361bab0798811764701cfda297c2031b9decb04bb2e434ec8fe80ba8cc01e56a'
+sha256sums=('1649e7ea66235c6f82daf9beb6b61b7765df54e9ef70f7f6fc1283f5c2b1e54a'
+            '361bab0798811764701cfda297c2031b9decb04bb2e434ec8fe80ba8cc01e56a'
             '0f9a9a6b2c3c460bbde7425bd62273c925259db1cc9dc18c6013aae99fb15cd8'
             '17e7db683662809882db6d6b3d855eb4372ca1bd05e15c4c490970a0b4b127c0'
             '2942c0e74be2b15cdd83e36fa524c3b6c68d4b4da2042f1b0cf7c13d3b806eac'
             '590d87707240529ca893199f852143f5d7c7266cb050e37e615900b013ac3d51'
-            '82439b4b81b0a72652befad9b9db52ffbc0180f307c92205aa5ab344f9f82830'
-            '1649e7ea66235c6f82daf9beb6b61b7765df54e9ef70f7f6fc1283f5c2b1e54a')
+            '82439b4b81b0a72652befad9b9db52ffbc0180f307c92205aa5ab344f9f82830')
 
-DLAGENTS=("https::./dlagent $url %u %o")
+DLAGENTS=("https::$PWD/dlagent $url %u %o")
 
 prepare() {
 # wxgtk < 3.1.0
